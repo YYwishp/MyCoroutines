@@ -365,9 +365,12 @@ class MainActivity : AppCompatActivity() {
 				val two = somethingUsefulTwoAsync()
 				// 但是等待结果必须调用其它的挂起或者阻塞
 				// 当我们等待结果的时候，这里我们使用 `runBlocking { …… }` 来阻塞主线程
-				runBlocking {
+				var result = runBlocking {
 					println("The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
+					one.await() + two.await()
 				}
+				println(result)
+
 			}
 			println("Completed in $time ms ----${Thread.currentThread().name}  ")
 		}
