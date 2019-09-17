@@ -151,6 +151,41 @@
                 android:textSize="18sp" />
 
 
+            <Button
+                android:id="@+id/btn_20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="使用 async 的结构化并发"
+                android:textSize="18sp" />
+
+
+
+
+
+            <Button
+                android:id="@+id/btn_21"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="使用 async 的结构化并发，异常情况"
+                android:textSize="18sp" />
+
+            <TextView
+                android:background="#990"
+                android:gravity="center"
+                android:text="上下文与调度器"
+                android:textSize="22sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+            <Button
+                android:id="@+id/btn_22"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="下文与调度器"
+                android:textSize="18sp" />
+
+
 
 
 

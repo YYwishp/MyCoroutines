@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
+import java.lang.Exception
 import java.util.logging.Logger
 import kotlin.concurrent.thread
 import kotlin.system.measureTimeMillis
@@ -331,11 +332,17 @@ class MainActivity : AppCompatActivity() {
 		btn_17.setOnClickListener {
 			runBlocking<Unit> {
 				val time = measureTimeMillis {
-					val one = async { doSomethingUsefulOne() }
-					val two = async { doSomethingUsefulTwo() }
-					println("The answer is ${one.await() + two.await()}")
+					val one = async {
+						println("one 该线程：----${Thread.currentThread().name}")
+						doSomethingUsefulOne()
+					}
+					val two = async {
+						println("Two 该线程：----${Thread.currentThread().name}")
+						doSomethingUsefulTwo()
+					}
+					println("The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
 				}
-				println("Completed in $time ms")
+				println("Completed in $time ms----${Thread.currentThread().name}")
 			}
 
 		}
@@ -344,8 +351,15 @@ class MainActivity : AppCompatActivity() {
 		btn_18.setOnClickListener {
 			runBlocking<Unit> {
 				val time = measureTimeMillis {
-					val one = async(start = CoroutineStart.LAZY) { doSomethingUsefulOne() }
-					val two = async(start = CoroutineStart.LAZY) { doSomethingUsefulTwo() }
+					val one = async(start = CoroutineStart.LAZY) {
+						println("one 该线程：----${Thread.currentThread().name}")
+						doSomethingUsefulOne()
+					}
+					val two = async(start = CoroutineStart.LAZY) {
+						println("Two 该线程：----${Thread.currentThread().name}")
+
+						doSomethingUsefulTwo()
+					}
 					// 执行一些计算
 					one.start() // 启动第一个
 					two.start() // 启动第二个
@@ -377,17 +391,81 @@ class MainActivity : AppCompatActivity() {
 
 
 
+		//todo:使用 async 的结构化并发
+		btn_20.setOnClickListener {
+			runBlocking {
+				var time = measureTimeMillis {
+					try {
+						println("结构下并发结果 = ${concurrentSum()}----${Thread.currentThread().name}  ")
+					} catch (e: Exception) {
+						println("出现异常：${e.toString()}")
+					}
+
+				}
+				println("完成时间  $time ms----${Thread.currentThread().name}")
+			}
+		}
+		//todo:使用 async 的结构化并发 异常情况
+		btn_21.setOnClickListener {
+			runBlocking<Unit> {
+				try {
+					failedConcurrentSum()
+				} catch (e: ArithmeticException) {
+					println("Computation failed with ArithmeticException")
+				}
+			}
+		}
+
+
+		///////////////////////////////////////////////////////////////////////////
+		// 下文与调度器
+		///////////////////////////////////////////////////////////////////////////
+
+		btn_22.setOnClickListener {
+			runBlocking {
+				launch {
+					println("main runBlocking      : I'm working in thread ${Thread.currentThread().name}")
+				}
+				launch (Dispatchers.Unconfined){
+
+				}
+
+
+
+
+
+
+
+
+
+
+
+
+
+			}
+		}
+
+
+
+
+
+
 	}
 
 
 	suspend fun doSomethingUsefulOne(): Int {
-		delay(1000L) // 假设我们在这里做了些有用的事
+		println("doSomethingUseful One 该线程：----${Thread.currentThread().name}")
+		delay(3000L) // 假设我们在这里做了些有用的事
 		return 13
+		//return 3/0
 	}
 
 	suspend fun doSomethingUsefulTwo(): Int {
-		delay(3000L) // 假设我们在这里也做了一些有用的事
-		return 29
+		println("doSomethingUseful Two 该线程：----${Thread.currentThread().name}")
+
+		delay(1000L) // 假设我们在这里也做了一些有用的事
+		//return 29
+		return 3/0
 	}
 
 	/**
@@ -410,6 +488,88 @@ class MainActivity : AppCompatActivity() {
 
 		doSomethingUsefulTwo()
 	}
+
+	//todo:使用 async 的结构化并发
+	suspend fun concurrentSum():Int{
+		var result = coroutineScope {
+			val one = async<Int> {
+
+				try {
+					println(" 结构化并发 1----${Thread.currentThread().name} ")
+					doSomethingUsefulOne()
+
+				}finally {
+					println("=== First child was cancelled")
+				}
+
+			}
+			val two = async<Int> {
+				println(" 结构化并发 2----${Thread.currentThread().name} ")
+				doSomethingUsefulTwo()
+			}
+
+
+			one.await() + two.await()
+		}
+
+		return result
+	}
+
+	suspend fun failedConcurrentSum(): Int = coroutineScope {
+		val one = async<Int> {
+			try {
+				println(" 结构化并发 1----${Thread.currentThread().name} ")
+				delay(4000) // 模拟一个长时间的运算
+
+				42
+			} finally {
+				println("First child was cancelled")
+			}
+		}
+		val two = async<Int> {
+			println("Second child throws an exception")
+			throw ArithmeticException()
+		}
+		one.await() + two.await()
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
