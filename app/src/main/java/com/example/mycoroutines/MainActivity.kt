@@ -1,78 +1,112 @@
 package com.example.mycoroutines
 
+import android.app.ProgressDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.ProgressBar
+import androidx.core.widget.ContentLoadingProgressBar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import java.lang.Exception
-import java.util.logging.Logger
-import kotlin.concurrent.thread
 import kotlin.system.measureTimeMillis
 
 class MainActivity : AppCompatActivity() {
+
+	val Tag = "Test"
+
+
+
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
+
+		btn_first_0.setOnClickListener {
+			startActivity(Intent(this, SecondActivity::class.java))
+		}
+
 
 
 
 		btn_first.setOnClickListener {
 			//GlobalScope.launch 执行在子线程
-			GlobalScope.launch { // 在后台启动一个新的协程并继续
+			GlobalScope.launch {
+				// 在后台启动一个新的协程并继续
 				delay(5000L) // 非阻塞的等待 5 秒钟（默认时间单位是毫秒）
-				println("World! ----${Thread.currentThread().name}") // 在延迟后打印输出 子线程
+				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出 子线程
 			}
-			println("Hello,----${Thread.currentThread().name}") // 协程已在等待时主线程还在继续 主线程
+			Log.e(Tag, "Hello,----${Thread.currentThread().name}") // 协程已在等待时主线程还在继续 主线程
 		}
 
 
 
 		btn_2.setOnClickListener {
-			runBlocking<Unit> { // 开始执行主协程
-				GlobalScope.launch { // 在后台启动一个新的协程并继续
+				// 开始执行主协程
+				GlobalScope.launch {
+					// 在后台启动一个新的协程并继续
 					//delay(1000L)
-					println("World!----${Thread.currentThread().name}")//子线程
+					Log.e(Tag, "World!----${Thread.currentThread().name}")//子线程
 				}
-				println("Hello0,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				println("Hello1,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				println("Hello2,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				runBlocking {     // 但是这个表达式阻塞了主线程
-					println("主线程 开始 延迟----${Thread.currentThread().name}")//子线程
-					delay(2000L)  // ……我们延迟 2 秒来保证 JVM 的存活 主线程
-					println("主线程 结束 延迟----${Thread.currentThread().name}")//子线程
+				Log.e(Tag, "Hello0,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello1,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello2,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello3,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello4,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello5,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello6,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello7,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello8,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello9,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello11,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello12,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello13,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+				Log.e(Tag, "Hello14,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+
+				// 但是这个表达式阻塞了主线程
+				runBlocking {
+
+					Log.e(Tag, "主线程 开始 延迟----${Thread.currentThread().name}")//子线程
+					//delay(2000L)  // ……我们延迟 2 秒来保证 JVM 的存活 主线程
+					Log.e(Tag, "主线程 结束 延迟----${Thread.currentThread().name}")//子线程
 				}
-			}
 		}
 
 
 		btn_3.setOnClickListener {
 			runBlocking {
-				val job = GlobalScope.launch { // 启动一个新协程并保持对这个作业的引用
+				val job = GlobalScope.launch {
+					// 启动一个新协程并保持对这个作业的引用
 					delay(3000L)
-					println("World!----${Thread.currentThread().name}") //子线程 DefaultDispatcher-worker-2
+					Log.e(Tag,"World!----${Thread.currentThread().name}") //子线程 DefaultDispatcher-worker-2
 				}
-				println("Hello,----${Thread.currentThread().name}") //主线程
+
+				Log.e(Tag,"Hello,----${Thread.currentThread().name}") //主线程
 				job.join() // 等待直到子协程执行结束
+
+
+				Log.e(Tag,"join 结束,----${Thread.currentThread().name}")
 			}
 		}
 
 
 		btn_4.setOnClickListener {
+
+
+
 			runBlocking {
 				launch {
-					//delay(1000L)
-					println("World!----${Thread.currentThread().name}")
+					delay(1000L)
+					Log.e(Tag, "World!----${Thread.currentThread().name}")
 				}
-				println("Hello1,----${Thread.currentThread().name}")
-				println("Hello2,----${Thread.currentThread().name}")
-				println("Hello3,----${Thread.currentThread().name}")
-				println("Hello4,----${Thread.currentThread().name}")
-
-
+				Log.e(Tag, "Hello1,----${Thread.currentThread().name}")
+				Log.e(Tag, "Hello2,----${Thread.currentThread().name}")
+				Log.e(Tag, "Hello3,----${Thread.currentThread().name}")
+				Log.e(Tag, "Hello4,----${Thread.currentThread().name}")
 			}
 
-			println("Hello44444,----${Thread.currentThread().name}")
+			Log.e(Tag, "Hello44444,----${Thread.currentThread().name}")
 
 		}
 
@@ -81,28 +115,21 @@ class MainActivity : AppCompatActivity() {
 			runBlocking {
 				launch {
 					//delay(200)
-					println("Task from runBlocking----${Thread.currentThread().name}")
-
-
-
+					Log.e(Tag, "Task from runBlocking----${Thread.currentThread().name}")
 				}
-
-
 				// 创建一个协程作用域
 				coroutineScope {
 					launch {
 						//delay(555)
-						println("Task from nested launch----${Thread.currentThread().name}")
+						Log.e(Tag, "Task from nested launch----${Thread.currentThread().name}")
 					}
-
 					//delay(100L)
-					println("Task from coroutine scope0----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
-					println("Task from coroutine scope1----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
-					println("Task from coroutine scope2----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
-					println("Task from coroutine scope3----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
-
+					Log.e(Tag, "Task from coroutine scope0----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
+					Log.e(Tag, "Task from coroutine scope1----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
+					Log.e(Tag, "Task from coroutine scope2----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
+					Log.e(Tag, "Task from coroutine scope3----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
 				}
-				println("Coroutine scope is over----${Thread.currentThread().name}") // 这一行在内嵌 launch 执行完毕后才输出
+				Log.e(Tag, "Coroutine scope is over----${Thread.currentThread().name}") // 这一行在内嵌 launch 执行完毕后才输出
 			}
 		}
 
@@ -110,14 +137,14 @@ class MainActivity : AppCompatActivity() {
 		btn_6.setOnClickListener {
 			suspend fun doWorld() {
 				delay(1000)
-				println("World!----${Thread.currentThread().name}")
+				Log.e(Tag, "World!----${Thread.currentThread().name}")
 			}
 
 			runBlocking {
 				launch {
 					doWorld()
 				}
-				println("Hello,----${Thread.currentThread().name}")
+				Log.e(Tag, "Hello,----${Thread.currentThread().name}")
 			}
 		}
 
@@ -126,7 +153,7 @@ class MainActivity : AppCompatActivity() {
 				repeat(100) {
 					launch {
 						delay(1000)
-						println("$it----${Thread.currentThread().name}")
+						Log.e(Tag, "$it----${Thread.currentThread().name}")
 					}
 				}
 			}
@@ -137,29 +164,23 @@ class MainActivity : AppCompatActivity() {
 
 		btn_8.setOnClickListener {
 			runBlocking {
-
-
 				GlobalScope.launch {
 					repeat(10) {
-						println("I'm sleeping $it ...----${Thread.currentThread().name} ")
+						Log.e(Tag, "I'm sleeping $it ...----${Thread.currentThread().name} ")
 						delay(500L)
 					}
 				}
-				println("Hello,----${Thread.currentThread().name}")
+				Log.e(Tag, "Hello,----${Thread.currentThread().name}")
 				delay(1300)
-				println("World!----${Thread.currentThread().name}")
+				Log.e(Tag, "World!----${Thread.currentThread().name}")
 			}
 		}
-
-
-
-
 		//=== 取消协程的执行
 		btn_9.setOnClickListener {
 			runBlocking {
 				var job = launch {
 					repeat(1000) {
-						println("job: I'm sleeping $it ...----${Thread.currentThread().name} ")  //主线程
+						Log.e(Tag, "job: I'm sleeping $it ...----${Thread.currentThread().name} ")  //主线程
 						delay(500L)
 					}
 				}
@@ -167,25 +188,23 @@ class MainActivity : AppCompatActivity() {
 
 
 				delay(1300L) // 延迟一段时间
-				println("main: I'm tired of waiting----${Thread.currentThread().name}!")
+				Log.e(Tag, "main: I'm tired of waiting----${Thread.currentThread().name}!")
 				job.cancel() // 取消该作业
 				job.join() // 等待作业执行结束
-				println("main: Now I can quit.----${Thread.currentThread().name}")
+				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
 			}
 		}
-
-
 		//=== 取消是协作的
 		btn_10.setOnClickListener {
 			runBlocking {
 				val startTime = System.currentTimeMillis()
-				val job = launch(Dispatchers.Default){
+				val job = launch(Dispatchers.Default) {
 					var nextPrintTime = startTime
 					var i = 0
 					while (i < 5) { // 一个执行计算的循环，只是为了占用 CPU
 						// 每秒打印消息两次
 						if (System.currentTimeMillis() >= nextPrintTime) {
-							println("job: I'm sleeping ${i++} ...----${Thread.currentThread().name}")//子线程
+							Log.e(Tag, "job: I'm sleeping ${i++} ...----${Thread.currentThread().name}")//子线程
 							nextPrintTime += 500L
 						}
 					}
@@ -195,24 +214,14 @@ class MainActivity : AppCompatActivity() {
 
 
 				delay(1300L) // 等待一段时间
-				println("main: I'm tired of waiting!----${Thread.currentThread().name}")
+				Log.e(Tag, "main: I'm tired of waiting!----${Thread.currentThread().name}")
 				job.cancelAndJoin() // 取消一个作业并且等待它结束  《如果协程正在执行计算任务，并且没有检查取消的话，那么它是不能被取消的》
-
-				println("main: Now I can quit.----${Thread.currentThread().name}")
+				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
 			}
-
-
-
-
 		}
-
-
 		//=== 使计算代码可取消 isActive 是一个可以被使用在 CoroutineScope 中的扩展属性。
 		btn_11.setOnClickListener {
-
 			runBlocking {
-
-
 				val startTime = System.currentTimeMillis()
 				val job = launch(Dispatchers.Default) {
 					var nextPrintTime = startTime
@@ -220,190 +229,268 @@ class MainActivity : AppCompatActivity() {
 					while (isActive) { // 可以被取消的计算循环 当1300L时间过了，isActive就返回false
 						// 每秒打印消息两次
 						if (System.currentTimeMillis() >= nextPrintTime) {
-							println("job: I'm sleeping ${i++} ...----${Thread.currentThread().name} ") // DefaultDispatcher-worker-1
+							Log.e(Tag, "job: I'm sleeping ${i++} ...----${Thread.currentThread().name} ") // DefaultDispatcher-worker-1
 							nextPrintTime += 500L
 						}
 					}
 				}
 				delay(1300L) // 等待一段时间
-				println("main: I'm tired of waiting!----${Thread.currentThread().name} ")
+				Log.e(Tag, "main: I'm tired of waiting!----${Thread.currentThread().name} ")
 				job.cancelAndJoin() // 取消该作业并等待它结束
-				println("main: Now I can quit.----${Thread.currentThread().name}")
-
+				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
 			}
-
 		}
-
 		//=== 在 finally 中释放资源
 		btn_12.setOnClickListener {
 			runBlocking {
 				val job = launch {
 					try {
 						repeat(1000) { i ->
-							println("job: I'm sleeping $i ...----${Thread.currentThread().name} ") //主线程
+							Log.e(Tag, "job: I'm sleeping $i ...----${Thread.currentThread().name} ") //主线程
 							delay(500L)
 						}
 					} finally {
 						//delay(500L)
-						println("job: I'm running finally ----${Thread.currentThread().name} ")
-
+						Log.e(Tag, "job: I'm running finally ----${Thread.currentThread().name} ")
 					}
 				}
 				delay(1300L) // 延迟一段时间
-				println("main: I'm tired of waiting!----${Thread.currentThread().name} ")
+				Log.e(Tag, "main: I'm tired of waiting!----${Thread.currentThread().name} ")
 				job.cancelAndJoin() // 取消该作业并且等待它结束
-				println("main: Now I can quit.----${Thread.currentThread().name} ")
+				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name} ")
 			}
 		}
-
-
 		//=== 运行不能取消的代码块
 		btn_13.setOnClickListener {
 			runBlocking {
 				val job = launch {
 					try {
 						repeat(1000) { i ->
-							println("job: I'm sleeping $i ...----${Thread.currentThread().name}")
+							Log.e(Tag, "job: I'm sleeping $i ...----${Thread.currentThread().name}")
 							delay(500L)
 						}
 					} finally {
 						withContext(NonCancellable) {
-							println("job: I'm running finally----${Thread.currentThread().name}")
+							Log.e(Tag, "job: I'm running finally----${Thread.currentThread().name}")
 							delay(1000L)
-							println("job: And I've just delayed for 1 sec because I'm non-cancellable----${Thread.currentThread().name}")
+							Log.e(Tag, "job: And I've just delayed for 1 sec because I'm non-cancellable----${Thread.currentThread().name}")
 						}
 					}
 				}
 				delay(1300L) // 延迟一段时间
-				println("main: I'm tired of waiting!----${Thread.currentThread().name}")
+				Log.e(Tag, "main: I'm tired of waiting!----${Thread.currentThread().name}")
 				job.cancelAndJoin() // 取消该作业并等待它结束
-				println("main: Now I can quit.----${Thread.currentThread().name}")
+				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
 			}
 		}
-
-
 		//=== 超时  withTimeout
 		btn_14.setOnClickListener {
 			runBlocking {
 				withTimeout(1300L) {
 					repeat(1000) { i ->
-						println("I'm sleeping $i ...----${Thread.currentThread().name} ")
+						Log.e(Tag, "I'm sleeping $i ...----${Thread.currentThread().name} ")
 						delay(500L)
 					}
 				}
 			}
 		}
-
-
-
-
-
-
 		//todo:超时，withTimeoutOrNull
 		btn_15.setOnClickListener {
 			runBlocking {
 				val result = withTimeoutOrNull(1300L) {
 					repeat(1000) { i ->
-						println("I'm sleeping $i ....----${Thread.currentThread().name} ")
+						Log.e(Tag, "I'm sleeping $i ....----${Thread.currentThread().name} ")
 						delay(500L)
 					}
 					"Done" // 在它运行得到结果之前取消它
 				}
-				println("Result is $result.----${Thread.currentThread().name} ")
+				Log.e(Tag, "Result is $result.----${Thread.currentThread().name} ")
 			}
 		}
-
-
-
 		//todo:默认顺序调用
 		btn_16.setOnClickListener {
 			runBlocking {
 				var time = measureTimeMillis {
 					val one = doSomethingUsefulOne()
 					val two = doSomethingUsefulTwo()
-					println("The answer is ${one + two}----${Thread.currentThread().name} ")//main
+					Log.e(Tag, "The answer is ${one + two}----${Thread.currentThread().name} ")//main
 				}
 
-				println("Completed in $time ms----${Thread.currentThread().name} ")//main
+				Log.e(Tag, "Completed in $time ms----${Thread.currentThread().name} ")//main
 			}
 		}
-
 		//todo; 使用 async 并发
 		btn_17.setOnClickListener {
 			runBlocking<Unit> {
 				val time = measureTimeMillis {
 					val one = async {
-						println("one 该线程：----${Thread.currentThread().name}")
+						Log.e(Tag, "one 该线程：----${Thread.currentThread().name}")
 						doSomethingUsefulOne()
 					}
 					val two = async {
-						println("Two 该线程：----${Thread.currentThread().name}")
+						Log.e(Tag, "Two 该线程：----${Thread.currentThread().name}")
 						doSomethingUsefulTwo()
 					}
-					println("The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
+					Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
 				}
-				println("Completed in $time ms----${Thread.currentThread().name}")
+				Log.e(Tag, "Completed in $time ms----${Thread.currentThread().name}")
 			}
-
 		}
-
 		//todo: 惰性启动的 async
 		btn_18.setOnClickListener {
-			runBlocking<Unit> {
+			/*runBlocking<Unit> {
 				val time = measureTimeMillis {
 					val one = async(start = CoroutineStart.LAZY) {
-						println("one 该线程：----${Thread.currentThread().name}")
+						Log.e(Tag, "one 该线程：----${Thread.currentThread().name}")
 						doSomethingUsefulOne()
 					}
 					val two = async(start = CoroutineStart.LAZY) {
-						println("Two 该线程：----${Thread.currentThread().name}")
+						Log.e(Tag, "Two 该线程：----${Thread.currentThread().name}")
 
 						doSomethingUsefulTwo()
 					}
 					// 执行一些计算
 					one.start() // 启动第一个
 					two.start() // 启动第二个
-					println("The answer is ${one.await() + two.await()}----${Thread.currentThread().name} ")
+					Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name} ")
 				}
-				println("Completed in $time ms----${Thread.currentThread().name} ")
+				Log.e(Tag, "Completed in $time ms----${Thread.currentThread().name} ")
+			}*/
+
+
+
+			//不阻塞主线程
+			GlobalScope.launch(Dispatchers.Main) {
+				var progressDialog = ProgressDialog(this@MainActivity)
+				progressDialog.show()
+				val time = measureTimeMillis {
+					val one = async(start = CoroutineStart.LAZY) {
+						Log.e(Tag, "one 该线程：----${Thread.currentThread().name}")
+						doSomethingUsefulOne()
+					}
+					val two = async(start = CoroutineStart.LAZY) {
+						Log.e(Tag, "Two 该线程：----${Thread.currentThread().name}")
+
+						doSomethingUsefulTwo()
+					}
+					// 执行一些计算
+					one.start() // 启动第一个
+					two.start() // 启动第二个
+					Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name} ")
+				}
+				Log.e(Tag, "Completed in $time ms----${Thread.currentThread().name} ")
+
+				progressDialog.dismiss()
 			}
 
-		}
 
-		//todo：async 风格的函数
+
+
+
+
+
+		}
+		/**
+		 * todo：async 风格的函数
+		 */
 		btn_19.setOnClickListener {
+			var progressDialog = ProgressDialog(this)
+			progressDialog.show()
 			val time = measureTimeMillis {
 				// 我们可以在协程外面启动异步执行
-				println("计算开始  ----${Thread.currentThread().name} ")
+				Log.e(Tag, "计算开始  ----${Thread.currentThread().name} ")
 				val one = somethingUsefulOneAsync()
 				val two = somethingUsefulTwoAsync()
-				// 但是等待结果必须调用其它的挂起或者阻塞
+
+				Log.e(Tag, "正在执行别的代码----0-----${Thread.currentThread().name}")
+				// 但是等待结果  必须调用其它的挂起或者阻塞
 				// 当我们等待结果的时候，这里我们使用 `runBlocking { …… }` 来阻塞主线程
-				var result = runBlocking {
-					println("The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
-					one.await() + two.await()
+				//var result = runBlocking {
+				//	Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
+				//	one.await() + two.await()
+				//}
+				GlobalScope.launch(Dispatchers.Main) {
+					//Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
+
+
+					Log.e(Tag, "正在执行别的代码----1-----${Thread.currentThread().name}")
+					var result	 = one.await() + two.await()
+
+
+					Log.e(Tag, "sssssssssssssss")
+					Log.e(Tag, "sssssssssssssss")
+					Log.e(Tag, result.toString())
+					btn_19.text = result.toString()
+					progressDialog.dismiss()
+
+
 				}
-				println(result)
+
+
+
+
+
+
 
 			}
-			println("Completed in $time ms ----${Thread.currentThread().name}  ")
+			Log.e(Tag, "Completed in $time ms ----${Thread.currentThread().name}  ")
+
+			//progressDialog.dismiss()
+
+
+
+
+
+
+
 		}
-
-
-
-		//todo:使用 async 的结构化并发
+		/**
+		 * todo:使用 async 的结构化并发
+		 */
 		btn_20.setOnClickListener {
+			var progressDialog = ProgressDialog(this)
+			progressDialog.show()
+
+
 			runBlocking {
 				var time = measureTimeMillis {
 					try {
-						println("结构下并发结果 = ${concurrentSum()}----${Thread.currentThread().name}  ")
-					} catch (e: Exception) {
-						println("出现异常：${e.toString()}")
-					}
 
+						Log.e(Tag, "结构下并发结果 = ${concurrentSum()}----${Thread.currentThread().name}  ")
+					} catch (e: Exception) {
+						Log.e(Tag, "出现异常：${e.toString()}")
+					}
 				}
-				println("完成时间  $time ms----${Thread.currentThread().name}")
+				Log.e(Tag, "完成时间  $time ms----${Thread.currentThread().name}")
+				progressDialog.dismiss()
 			}
+
+
+
+			GlobalScope.launch(Dispatchers.Main){
+				Log.e(Tag, "正在执行别的代码----0-----${Thread.currentThread().name}")
+				var time = measureTimeMillis {
+					try {
+
+						Log.e(Tag, "结构下并发结果 = ${concurrentSum()}----${Thread.currentThread().name}  ")
+					} catch (e: Exception) {
+						Log.e(Tag, "出现异常：${e.toString()}")
+					}
+				}
+
+				Log.e(Tag, "正在执行别的代码----1-----${Thread.currentThread().name}")
+
+
+				Log.e(Tag, "完成时间  $time ms----${Thread.currentThread().name}")
+
+
+				Log.e(Tag, "正在执行别的代码----2-----${Thread.currentThread().name}")
+				progressDialog.dismiss()
+			}
+
+
+
+
 		}
 		//todo:使用 async 的结构化并发 异常情况
 		btn_21.setOnClickListener {
@@ -411,7 +498,7 @@ class MainActivity : AppCompatActivity() {
 				try {
 					failedConcurrentSum()
 				} catch (e: ArithmeticException) {
-					println("Computation failed with ArithmeticException")
+					Log.e(Tag, "Computation failed with ArithmeticException")
 				}
 			}
 		}
@@ -420,29 +507,284 @@ class MainActivity : AppCompatActivity() {
 		///////////////////////////////////////////////////////////////////////////
 		// 下文与调度器
 		///////////////////////////////////////////////////////////////////////////
-
+		//todo:调度器与线程
 		btn_22.setOnClickListener {
 			runBlocking {
+				//todo:运行在父协程的上下文中，即 runBlocking 主协程 === main
 				launch {
-					println("main runBlocking      : I'm working in thread ${Thread.currentThread().name}")
+					Log.e(Tag, "main runBlocking      : I'm working in thread ${Thread.currentThread().name}")//=== main
 				}
-				launch (Dispatchers.Unconfined){
+				//todo: 不受限的——将工作在主线程中 === main
+				launch(context = Dispatchers.Unconfined) {
+					Log.e(Tag, "Unconfined            : I'm working in thread ${Thread.currentThread().name}")//=== main
+				}
+				//todo:将会获取默认调度器 === DefaultDispatcher-worker-2
+				launch(context = Dispatchers.Default){
+					Log.e(Tag, "Default               : I'm working in thread ${Thread.currentThread().name}")//=== DefaultDispatcher-worker-2
 
 				}
 
+				//todo:将使它获得一个新的线程 === MyOwnThread
+				launch(context = newSingleThreadContext("MyOwnThread")){
+					Log.e(Tag, "newSingleThreadContext: I'm working in thread ${Thread.currentThread().name}")//=== MyOwnThread
+				}
+			}
+		}
+		//todo: Unconfined 非受限调度器 vs 受限调度器
+		btn_23.setOnClickListener {
+
+			runBlocking {
+				//todo: 非受限的 ——将和主线程一起工作
+				launch(Dispatchers.Unconfined){
+					Log.e(Tag, "Unconfined 非受限的    : I'm working in thread ${Thread.currentThread().name}")
+					delay(500)
+					Log.e(Tag, "Unconfined 非受限的    : After delay in thread ${Thread.currentThread().name}")
+				}
+
+				//todo:  父协程的上下文，主 runBlocking 协程
+				launch {
+					Log.e(Tag, "main runBlocking 受限的 : I'm working in thread ${Thread.currentThread().name}")
+					delay(1000)
+					Log.e(Tag, "main runBlocking 受限的 : After delay in thread ${Thread.currentThread().name}")
+				}
+			}
 
 
+		}
 
+		//todo:调试协程与线程
+		btn_24.setOnClickListener {
+			runBlocking {
 
-
-
-
-
-
+				val a = async {
+					log("I'm computing a piece of the answer")
+					6
+				}
+				val b = async {
+					log("I'm computing another piece of the answer")
+					7
+				}
+				log("The answer is ${a.await() * b.await()}")
 
 
 
 			}
+		}
+
+		//todo 在不同线程间跳转
+		btn_25.setOnClickListener {
+			runBlocking {
+				var launch = launch(Dispatchers.Default) {
+					val one = somethingUsefulOneAsync()
+					val two = somethingUsefulTwoAsync()
+					// 但是等待结果必须调用其它的挂起或者阻塞
+					// 当我们等待结果的时候，这里我们使用 `runBlocking { …… }` 来阻塞主线程
+					var result = runBlocking {
+						Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
+						one.await() + two.await()
+					}
+
+
+					launch(Dispatchers.Main){
+						Log.e(Tag, "结果是 $result ----${Thread.currentThread().name} ")
+
+					}
+				}
+			}
+		}
+
+		//todo:测试代码
+		btn_26.setOnClickListener {
+
+			/*var progressDialog = ProgressDialog(this@MainActivity)
+			progressDialog.show()
+
+			GlobalScope.launch{
+
+				Log.e(Tag, "当前线程 ----${Thread.currentThread().name} ")
+				delay(3000)
+				Log.e(Tag, "挂起之后   当前线程 ----${Thread.currentThread().name} ")
+				progressDialog.dismiss()
+
+				withContext(Dispatchers.Main){
+					Log.e(Tag, "  withContext 当前线程 ----${Thread.currentThread().name} ")
+					btn_26.text = "测试完成"
+				}
+
+
+
+				//launch(Dispatchers.Main){
+				//	Log.e(Tag, "  launch 当前线程 ----${Thread.currentThread().name} ")
+				//	btn_26.text = "测试完成"
+				//}
+
+
+			}*/
+
+
+			//todo  runBlocking 里面的 delay 会阻塞线程，而 launch 之类的不会
+			runBlocking {
+				Log.e(Tag, "当前线程 ----${Thread.currentThread().name} ")// ----main  -- 1
+				btn_26.text = "测试开始"
+				var progressDialog = ProgressDialog(this@MainActivity)
+				progressDialog.show()
+				//withContext(Dispatchers.IO){
+				//	Log.e(Tag, "  withContext 当前线程 ----${Thread.currentThread().name} ")
+				//	delay(3000)
+				//}
+				/*launch(Dispatchers.Default){
+					Log.e(Tag, "  withContext 当前线程 ----${Thread.currentThread().name} ")
+						delay(3000)
+				}*/
+
+
+				//todo 测试 GlobalScope.launch
+				// ==== 启动 工作 协程 这里不能操作UI
+				GlobalScope.launch {
+					Log.e(Tag, "  GlobalScope.launch 当前线程 ----${Thread.currentThread().name} ")//----DefaultDispatcher-worker-1   -- 3
+					delay(3000)
+					Log.e(Tag, "  GlobalScope.launch 延迟结束 当前线程 ----${Thread.currentThread().name} ")//----DefaultDispatcher-worker-1 -- 4
+					//== 切回主线程
+					launch(Dispatchers.Main) {
+						Log.e(Tag, "  launch(Dispatchers.Default) 当前线程 ----${Thread.currentThread().name} ")// ----main -- 5
+						progressDialog.dismiss()
+						btn_26.text = "测试完成"
+					}
+				}
+				Log.e(Tag, "协程结束    当前线程 ----${Thread.currentThread().name} ")// ----main -- 2
+			}
+
+		}
+
+
+		//todo 测试GlobalScope.async
+		btn_27.setOnClickListener {
+
+			//todo Dispatchers.Unconfined - 没指定，就是在当前线程 当前主线程
+			GlobalScope.launch(Dispatchers.Unconfined){
+
+				btn_27.text = "测试开始"
+
+				var progressDialog = ProgressDialog(this@MainActivity)
+				progressDialog.show()
+
+
+				Log.e(Tag, "协程开始--------${Thread.currentThread().name}")//----main  ```1
+
+				var deferred = GlobalScope.async {
+					delay(1000)
+					Log.e(Tag, "This is async --------${Thread.currentThread().name}")//-DefaultDispatcher-worker-1 ```4
+					"测试"
+				}
+				Log.e(Tag, "协程  start --------${Thread.currentThread().name}")//----main  ```2
+				var result = deferred.await()
+				Log.e(Tag,"GlobalScope.async 结果：$result--------${Thread.currentThread().name}")//-DefaultDispatcher-worker-1 ```5
+				Log.e(Tag, "GlobalScope.async END--------${Thread.currentThread().name}")//-DefaultDispatcher-worker-1 ```6
+				//== 切回主线程
+				launch(Dispatchers.Main){
+					progressDialog.dismiss()
+					btn_27.text = "测试完成" //
+
+				}
+
+			}
+			Log.e(Tag, "主线程位于协程之后的代码执行--------${Thread.currentThread().name}")//---main ```3
+
+		}
+
+		//todo 测试runBlocking
+		btn_28.setOnClickListener {1
+			Log.e(Tag, "----Start----${Thread.currentThread().name}")
+			var runBlocking = runBlocking {
+				Log.e(Tag, "协程开始--------${Thread.currentThread().name}")
+				delay(1000)  //阻塞当前线程
+				btn_28.text = "测试完成" //
+
+				123
+			}
+
+
+			Log.e(Tag, "----End---$runBlocking-----${Thread.currentThread().name}")
+		}
+
+
+		//todo 测试async
+		btn_29.setOnClickListener {
+
+			//runBlocking(Dispatchers.Main){
+			//	Log.e(Tag, "---- Start --------${Thread.currentThread().name}")
+			//	var progressDialog = ProgressDialog(this@MainActivity)
+			//	progressDialog.show()
+			//
+			//
+			//	var async = async(Dispatchers.IO) {
+			//		Log.e(Tag, "async执行 --------${Thread.currentThread().name}")
+			//		var a = 0
+			//		repeat(1000000_000){
+			//			++a
+			//		}
+			//
+			//
+			//		//delay(5000)
+			//		a
+			//	}
+			//	Log.e(Tag, "----等待 --------${Thread.currentThread().name}")
+			//	Log.e(Tag, "----End---${async.await()}-----${Thread.currentThread().name}")
+			//
+			//	progressDialog.dismiss()
+			//}
+
+
+			/*GlobalScope.launch(Dispatchers.Main) {
+				Log.e(Tag, "---- Start --------${Thread.currentThread().name}")
+				var progressDialog = ProgressDialog(this@MainActivity)
+				progressDialog.show()
+
+
+				var async = async() {
+					Log.e(Tag, "async执行 --------${Thread.currentThread().name}")
+					var a = 0
+					//repeat(100000_000){
+					//	//++a*3+(a-3)*10
+					//	++a
+					//}
+
+
+					delay(5000)
+					a
+					Log.e(Tag, "async结束 --------${Thread.currentThread().name}")
+				}
+				Log.e(Tag, "----等待 --------${Thread.currentThread().name}")
+				Log.e(Tag, "----End---${async.await()}-----${Thread.currentThread().name}")
+				Log.e(Tag, "----等待 结束--------${Thread.currentThread().name}")
+				progressDialog.dismiss()
+
+
+			}*/
+
+
+			runBlocking<Unit> {
+				launch { // 默认继承 parent coroutine 的 CoroutineDispatcher，指定运行在 main 线程
+					Log.e(Tag, "main runBlocking: I'm working in thread ${Thread.currentThread().name}")
+					delay(1000)
+					Log.e(Tag, "main runBlocking: After delay in thread ${Thread.currentThread().name}")
+				}
+				GlobalScope.launch(Dispatchers.Main) {
+					Log.e(Tag, "Unconfined      : I'm working in thread ${Thread.currentThread().name}")
+					delay(1000)
+					Log.e(Tag, "Unconfined      : After delay in thread ${Thread.currentThread().name}")
+				}
+			}
+
+
+
+
+
+
+
+
+
+
 		}
 
 
@@ -450,22 +792,26 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
+
+
+
+
 	}
 
-
 	suspend fun doSomethingUsefulOne(): Int {
-		println("doSomethingUseful One 该线程：----${Thread.currentThread().name}")
+		Log.e(Tag, "doSomethingUseful One 该线程：----${Thread.currentThread().name}")
 		delay(3000L) // 假设我们在这里做了些有用的事
 		return 13
 		//return 3/0
 	}
 
 	suspend fun doSomethingUsefulTwo(): Int {
-		println("doSomethingUseful Two 该线程：----${Thread.currentThread().name}")
+		Log.e(Tag, "doSomethingUseful Two 该线程：----${Thread.currentThread().name}")
 
 		delay(1000L) // 假设我们在这里也做了一些有用的事
-		//return 29
-		return 3/0
+		return 29
+		//return 3 / 0
 	}
 
 	/**
@@ -474,7 +820,7 @@ class MainActivity : AppCompatActivity() {
 	 */
 	// somethingUsefulOneAsync 函数的返回值类型是 Deferred<Int>
 	fun somethingUsefulOneAsync() = GlobalScope.async {
-		println("计算1 ----${Thread.currentThread().name} ")
+		Log.e(Tag, "计算1 ----${Thread.currentThread().name} ")
 		doSomethingUsefulOne()
 	}
 
@@ -484,32 +830,27 @@ class MainActivity : AppCompatActivity() {
 	 */
 	// somethingUsefulTwoAsync 函数的返回值类型是 Deferred<Int>
 	fun somethingUsefulTwoAsync() = GlobalScope.async {
-		println("计算2 ----${Thread.currentThread().name} ")
+		Log.e(Tag, "计算2 ----${Thread.currentThread().name} ")
 
 		doSomethingUsefulTwo()
 	}
 
 	//todo:使用 async 的结构化并发
-	suspend fun concurrentSum():Int{
+	suspend fun  concurrentSum(): Int {
 		var result = coroutineScope {
-			val one = async<Int> {
-
-				try {
-					println(" 结构化并发 1----${Thread.currentThread().name} ")
-					doSomethingUsefulOne()
-
-				}finally {
-					println("=== First child was cancelled")
-				}
+			val one = GlobalScope.async<Int> {
+				Log.e(Tag, " 结构化并发 1----${Thread.currentThread().name} ")//---- DefaultDispatcher-worker-1
+				doSomethingUsefulOne()
 
 			}
 			val two = async<Int> {
-				println(" 结构化并发 2----${Thread.currentThread().name} ")
+				Log.e(Tag, " 结构化并发 2----${Thread.currentThread().name} ") //----main
 				doSomethingUsefulTwo()
 			}
 
 
 			one.await() + two.await()
+			//one.await()
 		}
 
 		return result
@@ -518,58 +859,21 @@ class MainActivity : AppCompatActivity() {
 	suspend fun failedConcurrentSum(): Int = coroutineScope {
 		val one = async<Int> {
 			try {
-				println(" 结构化并发 1----${Thread.currentThread().name} ")
+				Log.e(Tag, " 结构化并发 1----${Thread.currentThread().name} ")
 				delay(4000) // 模拟一个长时间的运算
-
 				42
 			} finally {
-				println("First child was cancelled")
+				Log.e(Tag, "First child was cancelled")
 			}
 		}
 		val two = async<Int> {
-			println("Second child throws an exception")
+			Log.e(Tag, "Second child throws an exception")
 			throw ArithmeticException()
 		}
 		one.await() + two.await()
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	fun log(msg: String) = Log.e(Tag, "[${Thread.currentThread().name}] $msg")
 }
 
 

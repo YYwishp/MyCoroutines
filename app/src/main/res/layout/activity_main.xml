@@ -15,6 +15,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <Button
+                android:id="@+id/btn_first_0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="启动另一个 activity"
+                android:textAllCaps="false"
+                android:textSize="18sp" />
+
+
 
             <Button
                 android:id="@+id/btn_first"
@@ -184,6 +193,86 @@
                 android:layout_height="wrap_content"
                 android:text="下文与调度器"
                 android:textSize="18sp" />
+
+
+
+
+            <Button
+                android:id="@+id/btn_23"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="非受限调度器 vs 受限调度器"
+                android:textSize="18sp" />
+
+
+
+            <Button
+                android:id="@+id/btn_24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="调试协程与线程"
+                android:textSize="18sp" />
+
+
+
+
+
+            <Button
+                android:id="@+id/btn_25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="在不同线程间跳转"
+                android:textSize="18sp" />
+
+
+
+            <Button
+                android:id="@+id/btn_26"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="测试代码"
+                android:textSize="18sp" />
+
+
+            <Button
+                android:id="@+id/btn_27"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="测试GlobalScope.async"
+                android:textSize="18sp" />
+
+
+
+
+            <Button
+                android:id="@+id/btn_28"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="测试runBlocking"
+                android:textSize="18sp" />
+
+
+
+
+
+            <Button
+                android:id="@+id/btn_29"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="测试async"
+                android:textSize="18sp" />
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
