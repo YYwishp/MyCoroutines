@@ -262,6 +262,31 @@
                 android:text="测试async"
                 android:textSize="18sp" />
 
+            <TextView
+                android:background="#099"
+                android:gravity="center"
+                android:text="异步流 Flow"
+                android:textSize="22sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btn_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="挂起函数"
+                android:textSize="18sp" />
+
+
+
+
+            <Button
+                android:id="@+id/btn_31"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="流"
+                android:textSize="18sp" />
+
 
 
 

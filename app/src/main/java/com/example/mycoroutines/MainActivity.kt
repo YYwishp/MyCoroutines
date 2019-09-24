@@ -9,6 +9,9 @@ import android.widget.ProgressBar
 import androidx.core.widget.ContentLoadingProgressBar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import java.lang.Exception
 import kotlin.system.measureTimeMillis
 
@@ -323,15 +326,27 @@ class MainActivity : AppCompatActivity() {
 		btn_17.setOnClickListener {
 			runBlocking<Unit> {
 				val time = measureTimeMillis {
-					val one = async {
+
+					log("111111111")
+					val one = async(Dispatchers.Main){
 						Log.e(Tag, "one 该线程：----${Thread.currentThread().name}")
 						doSomethingUsefulOne()
 					}
-					val two = async {
+					val two = async() {
 						Log.e(Tag, "Two 该线程：----${Thread.currentThread().name}")
 						doSomethingUsefulTwo()
 					}
-					Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
+
+					log("dddddddddddddd")
+					//delay(2000)
+					var a = 0
+					repeat(1000000_000){
+						++a
+					}
+					log("ssssssssss")
+					//Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
+
+					log("sssssssss")
 				}
 				Log.e(Tag, "Completed in $time ms----${Thread.currentThread().name}")
 			}
@@ -360,29 +375,95 @@ class MainActivity : AppCompatActivity() {
 
 
 			//不阻塞主线程
-			GlobalScope.launch(Dispatchers.Main) {
+			/*GlobalScope.launch(Dispatchers.Main) {
 				var progressDialog = ProgressDialog(this@MainActivity)
 				progressDialog.show()
 				val time = measureTimeMillis {
-					val one = async(start = CoroutineStart.LAZY) {
+
+
+					log("1111111")
+					val one = GlobalScope.async(start = CoroutineStart.LAZY) {
 						Log.e(Tag, "one 该线程：----${Thread.currentThread().name}")
+						delay(4000)
+						btn_18.text = "111111111"
 						doSomethingUsefulOne()
+
 					}
 					val two = async(start = CoroutineStart.LAZY) {
 						Log.e(Tag, "Two 该线程：----${Thread.currentThread().name}")
-
+						delay(2000)
+						btn_18.text = "222222"
 						doSomethingUsefulTwo()
 					}
 					// 执行一些计算
 					one.start() // 启动第一个
 					two.start() // 启动第二个
+
+					log("ssssssss")
+					//Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name} ")
+
+
+					log("dddddddddddddd")
+				}
+				Log.e(Tag, "Completed in $time ms----${Thread.currentThread().name} ")
+
+				progressDialog.dismiss()
+			}*/
+
+
+
+
+			GlobalScope.launch(Dispatchers.Main) {
+				var progressDialog = ProgressDialog(this@MainActivity)
+				progressDialog.show()
+				val time = measureTimeMillis {
+
+
+					log("1111111")
+					val one = async(start = CoroutineStart.DEFAULT,context = Dispatchers.Default) {
+						Log.e(Tag, "one 该线程：----${Thread.currentThread().name}")
+						//delay(4000)
+
+
+
+						withContext(Dispatchers.Main){
+							btn_18.text = "111111111"
+						}
+						doSomethingUsefulOne()
+
+					}
+					val two = async(start = CoroutineStart.DEFAULT,context = Dispatchers.Default) {
+						Log.e(Tag, "Two 该线程：----${Thread.currentThread().name}")
+						//delay(2000)
+
+
+
+						withContext(Dispatchers.Main){
+							btn_18.text = "222222"
+						}
+						doSomethingUsefulTwo()
+					}
+
+
+
+
+					log("dddddddddddddd")
+					delay(8000)
+					//var a = 0
+					//repeat(1000000_000){
+					//	++a
+					//}
+
+					log("ssssssss---------------------------------------")
 					Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name} ")
+
+
+					log("dddddddddddddd")
 				}
 				Log.e(Tag, "Completed in $time ms----${Thread.currentThread().name} ")
 
 				progressDialog.dismiss()
 			}
-
 
 
 
@@ -411,27 +492,27 @@ class MainActivity : AppCompatActivity() {
 				//}
 				GlobalScope.launch(Dispatchers.Main) {
 					//Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
+					val time = measureTimeMillis{
+						Log.e(Tag, "正在执行别的代码----1-----${Thread.currentThread().name}")
+						//var result	 = one.await() + two.await()
+						var result	 = one.await()
 
 
-					Log.e(Tag, "正在执行别的代码----1-----${Thread.currentThread().name}")
-					var result	 = one.await() + two.await()
+						Log.e(Tag, "sssssssssssssss")
+						Log.e(Tag, "sssssssssssssss")
+						Log.e(Tag, result.toString())
+						btn_19.text = result.toString()
+						Log.e(Tag, "tttttttt")
+						Log.e(Tag, "tttttttt")
+						Log.e(Tag, two.await().toString())
 
+						progressDialog.dismiss()
+					}
+					Log.e(Tag, "Completed **** in $time ms ----${Thread.currentThread().name}  ")
 
-					Log.e(Tag, "sssssssssssssss")
-					Log.e(Tag, "sssssssssssssss")
-					Log.e(Tag, result.toString())
-					btn_19.text = result.toString()
-					progressDialog.dismiss()
 
 
 				}
-
-
-
-
-
-
-
 			}
 			Log.e(Tag, "Completed in $time ms ----${Thread.currentThread().name}  ")
 
@@ -505,7 +586,7 @@ class MainActivity : AppCompatActivity() {
 
 
 		///////////////////////////////////////////////////////////////////////////
-		// 下文与调度器
+		// ============================= 下文与调度器 =================================
 		///////////////////////////////////////////////////////////////////////////
 		//todo:调度器与线程
 		btn_22.setOnClickListener {
@@ -775,14 +856,86 @@ class MainActivity : AppCompatActivity() {
 					Log.e(Tag, "Unconfined      : After delay in thread ${Thread.currentThread().name}")
 				}
 			}
+		}
+		///////////////////////////////////////////////////////////////////////////
+		// =========================== 异步流 Flow =================================
+		///////////////////////////////////////////////////////////////////////////
+
+		//todo 挂起函数
+		btn_30.setOnClickListener {
+			runBlocking<Unit> {
+
+
+				var time = measureTimeMillis {
+					foo().forEach { value ->
+						log("----$value")
+					}
+				}
+
+				log("---- 时间：$time")
+
+			}
+		}
+
+		//todo 流
+		btn_31.setOnClickListener {
+			/*runBlocking<Unit> {
+				// 启动并发的协程以验证主线程并未阻塞
+				//launch {
+				//	for (k in 1..3) {
+				//		//println("I'm not blocked $k")
+				//		log("I'm not blocked $k")
+				//		//delay(2000)
+				//	}
+				//}
+				// 收集这个流
+				foo_1().collect {value->
+					log("结果：$value")
+				}
+
+			}*/
+
+			/*GlobalScope.launch(Dispatchers.Main) {
+				// 启动并发的协程以验证主线程并未阻塞
+				launch {
+					for (k in 1..3) {
+						//println("I'm not blocked $k")
+						log("I'm not blocked $k")
+						delay(2000)//挂起2秒
+					}
+				}
+				 //收集这个流
+				foo_1().collect {value->
+					log("结果：$value")
+				}
+
+			}*/
+
+
+
+			GlobalScope.launch(Dispatchers.Main,start = CoroutineStart.LAZY) {
+				log("协程开始0")
+				log("协程开始1")
+				log("协程开始2")
+				withContext(Dispatchers.IO){
+					log("withContext---0")
+					log("withContext---1")
+					log("withContext---2")
+					delay(3000)
+					log("withContext---3")
+				}
+
+				log("协程开始---3")
+
+				delay(3000)
+				log("协程开始---4")
 
 
 
 
 
 
-
-
+			}
 
 
 		}
@@ -797,19 +950,36 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 	}
+	///////////////////////////////////////////////////////////////////////////
+	// =========================== 其他代码 ==========================
+	///////////////////////////////////////////////////////////////////////////
 
 	suspend fun doSomethingUsefulOne(): Int {
+		//Log.e(Tag, "doSomethingUseful One 该线程：----${Thread.currentThread().name}")
+		delay(4000L) // 假设我们在这里做了些有用的事
 		Log.e(Tag, "doSomethingUseful One 该线程：----${Thread.currentThread().name}")
-		delay(3000L) // 假设我们在这里做了些有用的事
 		return 13
 		//return 3/0
 	}
 
 	suspend fun doSomethingUsefulTwo(): Int {
-		Log.e(Tag, "doSomethingUseful Two 该线程：----${Thread.currentThread().name}")
+		//Log.e(Tag, "doSomethingUseful Two 该线程：----${Thread.currentThread().name}")
 
-		delay(1000L) // 假设我们在这里也做了一些有用的事
+		delay(2000L) // 假设我们在这里也做了一些有用的事
+		Log.e(Tag, "doSomethingUseful Two 该线程：----${Thread.currentThread().name}")
 		return 29
 		//return 3 / 0
 	}
@@ -874,6 +1044,24 @@ class MainActivity : AppCompatActivity() {
 	}
 
 	fun log(msg: String) = Log.e(Tag, "[${Thread.currentThread().name}] $msg")
+
+
+
+	suspend fun foo(): List<Int> {
+		delay(3000) // 假装我们在这里做了一些异步的事情
+		return listOf(1, 2, 3)
+	}
+
+
+
+	fun foo_1(): Flow<Int> = flow { // 流构建器
+		for (i in 1..3) {
+			delay(2000) // 假装我们在这里做了一些有用的事情
+			emit(i) // 发送下一个值
+		}
+	}
+
+
 }
 
 

@@ -7,8 +7,8 @@ import android.util.Log
 import kotlinx.android.synthetic.main.activity_second.*
 import kotlinx.coroutines.*
 
-//class SecondActivity : AppCompatActivity(), CoroutineScope by CoroutineScope(Dispatchers.Default) {
-class SecondActivity : AppCompatActivity(){
+class SecondActivity : AppCompatActivity(), CoroutineScope by CoroutineScope(Dispatchers.Default) {
+//class SecondActivity : AppCompatActivity(){
 	val Tag = "Test"
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -18,6 +18,9 @@ class SecondActivity : AppCompatActivity(){
 
 			var progressDialog = ProgressDialog(this)
 			progressDialog.show()
+
+
+
 
 			// 在示例中启动了 10 个协程，且每个都工作了不同的时长
 			/*repeat(10) { i ->
@@ -34,11 +37,13 @@ class SecondActivity : AppCompatActivity(){
 					}
 				}
 			}*/
-
+			Log.e(Tag, "干活4----${Thread.currentThread().name}")// --
 			GlobalScope.launch(Dispatchers.Main){
 				Log.e(Tag, "干活000----${Thread.currentThread().name}")// --
 				var deferred = async(Dispatchers.Main) {
 					//delay(  5000L)
+
+					Log.e(Tag, "异步开始----${Thread.currentThread().name}")// --
 					var a = 0
 					repeat(100000_000){
 						++a
@@ -66,6 +71,6 @@ class SecondActivity : AppCompatActivity(){
 
 	override fun onDestroy() {
 		super.onDestroy()
-		//cancel() //-- 取消协程
+		cancel() //-- 取消协程
 	}
 }
