@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.lang.Exception
+import kotlin.coroutines.coroutineContext
 import kotlin.system.measureTimeMillis
 
 class MainActivity : AppCompatActivity() {
@@ -894,7 +895,6 @@ class MainActivity : AppCompatActivity() {
 				}
 
 			}*/
-
 			/*GlobalScope.launch(Dispatchers.Main) {
 				// 启动并发的协程以验证主线程并未阻塞
 				launch {
@@ -913,29 +913,40 @@ class MainActivity : AppCompatActivity() {
 
 
 
-			GlobalScope.launch(Dispatchers.Main,start = CoroutineStart.LAZY) {
+
+			/*GlobalScope.launch(Dispatchers.Main+CoroutineName("Hello")) {
 				log("协程开始0")
 				log("协程开始1")
 				log("协程开始2")
-				withContext(Dispatchers.IO){
+				var withContext = withContext(Dispatchers.IO) {
 					log("withContext---0")
 					log("withContext---1")
 					log("withContext---2")
 					delay(3000)
 					log("withContext---3")
+
+
+					"ssss"
 				}
 
 				log("协程开始---3")
 
 				delay(3000)
 				log("协程开始---4")
+				val job = coroutineContext[Job]
+				log("${coroutineContext[Job]}------${this.coroutineContext}")
+				log("-----------------------------")
+
+				coroutineJob()
+			}*/
 
 
 
-
-
+			GlobalScope.launch(MyContinuationInterceptor()){
 
 			}
+
+
 
 
 		}
@@ -963,6 +974,16 @@ class MainActivity : AppCompatActivity() {
 
 
 	}
+
+	suspend inline fun Job.Key.currentJob() = coroutineContext[Job]
+
+	suspend fun coroutineJob() {
+		GlobalScope.launch{
+			log(" 内部 "+Job.currentJob().toString())
+		}
+		log(" 外部 "+Job.currentJob().toString())
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	// =========================== 其他代码 ==========================
 	///////////////////////////////////////////////////////////////////////////
