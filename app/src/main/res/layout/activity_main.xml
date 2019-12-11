@@ -287,11 +287,11 @@
                 android:text="流"
                 android:textSize="18sp" />
 
-
-
-
-
-
+            <com.example.mycoroutines.CircularProgress
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                app:borderWidth="6dp"
+                android:layout_centerInParent="true" />
 
 
 

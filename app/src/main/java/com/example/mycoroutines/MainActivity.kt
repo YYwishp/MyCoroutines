@@ -36,12 +36,47 @@ class MainActivity : AppCompatActivity() {
 
 		btn_first.setOnClickListener {
 			//GlobalScope.launch 执行在子线程
-			GlobalScope.launch {
+			/*GlobalScope.launch {
 				// 在后台启动一个新的协程并继续
 				delay(5000L) // 非阻塞的等待 5 秒钟（默认时间单位是毫秒）
+
+				btn_first.text = "5秒后"
+
 				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出 子线程
 			}
-			Log.e(Tag, "Hello,----${Thread.currentThread().name}") // 协程已在等待时主线程还在继续 主线程
+			Log.e(Tag, "Hello,----${Thread.currentThread().name}") // 协程已在等待时主线程还在继续 主线程*/
+
+
+			GlobalScope.launch(Dispatchers.Main) {
+				var progressDialog = ProgressDialog(this@MainActivity)
+				progressDialog.show()
+
+				Log.e(Tag, "World! ----${Thread.currentThread().name}")
+				Log.e(Tag, "World! ----${Thread.currentThread().name}")
+				Log.e(Tag, "Wor ----${Thread.currentThread().name}")
+
+				withContext(Dispatchers.IO){
+					Log.e(Tag, "aaaaaaa ----${Thread.currentThread().name}")
+					Log.e(Tag, "aaaaaa ----${Thread.currentThread().name}")
+					Log.e(Tag, "aaaa ----${Thread.currentThread().name}")
+					Log.e(Tag, "aa ----${Thread.currentThread().name}")
+					delay(4000)
+				}
+
+				Log.e(Tag, "vvvvvvvvvv ----${Thread.currentThread().name}")
+				Log.e(Tag, "vvvvvvvvv ----${Thread.currentThread().name}")
+				Log.e(Tag, "vvvvvvvv ----${Thread.currentThread().name}")
+				Log.e(Tag, "vvvvvvv ----${Thread.currentThread().name}")
+				Log.e(Tag, "vvvvvv ----${Thread.currentThread().name}")
+
+
+				progressDialog.dismiss()
+
+			}
+
+
+
+
 		}
 
 
@@ -217,6 +252,9 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
+
+
 				delay(1300L) // 等待一段时间
 				Log.e(Tag, "main: I'm tired of waiting!----${Thread.currentThread().name}")
 				job.cancelAndJoin() // 取消一个作业并且等待它结束  《如果协程正在执行计算任务，并且没有检查取消的话，那么它是不能被取消的》
@@ -325,7 +363,10 @@ class MainActivity : AppCompatActivity() {
 		}
 		//todo; 使用 async 并发
 		btn_17.setOnClickListener {
-			runBlocking<Unit> {
+			GlobalScope.launch(Dispatchers.Main) {
+				var progressDialog = ProgressDialog(this@MainActivity)
+				progressDialog.show()
+
 				val time = measureTimeMillis {
 
 					log("111111111")
@@ -341,16 +382,22 @@ class MainActivity : AppCompatActivity() {
 					log("dddddddddddddd")
 					//delay(2000)
 					var a = 0
-					repeat(1000000_000){
-						++a
-					}
+					//repeat(1000000_000){
+					//	++a
+					//}
 					log("ssssssssss")
-					//Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
+					Log.e(Tag, "The answer is ${one.await() + two.await()}----${Thread.currentThread().name}")
 
 					log("sssssssss")
+
+					progressDialog.dismiss()
 				}
 				Log.e(Tag, "Completed in $time ms----${Thread.currentThread().name}")
 			}
+
+
+
+
 		}
 		//todo: 惰性启动的 async
 		btn_18.setOnClickListener {
