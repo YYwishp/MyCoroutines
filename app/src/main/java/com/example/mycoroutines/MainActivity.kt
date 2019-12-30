@@ -2,17 +2,14 @@ package com.example.mycoroutines
 
 import android.app.ProgressDialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.ProgressBar
-import androidx.core.widget.ContentLoadingProgressBar
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import java.lang.Exception
+import kotlin.concurrent.thread
 import kotlin.coroutines.coroutineContext
 import kotlin.system.measureTimeMillis
 
@@ -51,6 +48,10 @@ class MainActivity : AppCompatActivity() {
 				var progressDialog = ProgressDialog(this@MainActivity)
 				progressDialog.show()
 
+				launch {
+
+				}
+
 				Log.e(Tag, "World! ----${Thread.currentThread().name}")
 				Log.e(Tag, "World! ----${Thread.currentThread().name}")
 				Log.e(Tag, "Wor ----${Thread.currentThread().name}")
@@ -59,8 +60,18 @@ class MainActivity : AppCompatActivity() {
 					Log.e(Tag, "aaaaaaa ----${Thread.currentThread().name}")
 					Log.e(Tag, "aaaaaa ----${Thread.currentThread().name}")
 					Log.e(Tag, "aaaa ----${Thread.currentThread().name}")
-					Log.e(Tag, "aa ----${Thread.currentThread().name}")
-					delay(4000)
+					Log.e(Tag, "aa ----${Thread.currentThread().name}    开始时间 = ${System.currentTimeMillis()}")
+					//delay(4000)
+
+
+					//=== 模拟耗时操作
+					var a = 0
+					repeat(1000000_00){
+						++a
+					}
+					Log.e(Tag, "aa   耗时操作结束 ----${Thread.currentThread().name}   结束时间 =  ${System.currentTimeMillis()}")
+
+
 				}
 
 				Log.e(Tag, "vvvvvvvvvv ----${Thread.currentThread().name}")
@@ -82,41 +93,50 @@ class MainActivity : AppCompatActivity() {
 
 
 		btn_2.setOnClickListener {
-				// 开始执行主协程
-				GlobalScope.launch {
-					// 在后台启动一个新的协程并继续
-					//delay(1000L)
-					Log.e(Tag, "World!----${Thread.currentThread().name}")//子线程
-				}
-				Log.e(Tag, "Hello0,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello1,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello2,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello3,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello4,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello5,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello6,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello7,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello8,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello9,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello11,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello12,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello13,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
-				Log.e(Tag, "Hello14,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+			/**
+			 * 注意：GlobalScope.launch 是非阻塞 在内部执行 delay 是不阻塞UI线程；
+			 * 但是，runBlocking 是阻塞线程的，内部 delay 阻塞 UI线程，导致 progressDialog 不显示
+			 */
+			var progressDialog = ProgressDialog(this@MainActivity)
+			progressDialog.show()
+			// 开始执行主协程 非阻塞主线程
+			GlobalScope.launch {
+				// 在后台启动一个新的协程并继续
+				delay(1000L)   //
+				Log.e(Tag, "World!----${Thread.currentThread().name}")//子线程
+			}
+			Log.e(Tag, "Hello0,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+			Log.e(Tag, "Hello1,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+			Log.e(Tag, "Hello2,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+			Log.e(Tag, "Hello3,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+			Log.e(Tag, "Hello4,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
+			Log.e(Tag, "Hello5,----${Thread.currentThread().name}") // 主协程在这里会立即执行  主线程
 
-				// 但是这个表达式阻塞了主线程
-				runBlocking {
+			// 但是这个表达式阻塞了主线程
+			runBlocking {
+				Log.e(Tag, "主线程 开始 延迟----${Thread.currentThread().name}")//子线程
+				delay(2000L)
+				Log.e(Tag, "主线程 结束 延迟----${Thread.currentThread().name}")//子线程
 
-					Log.e(Tag, "主线程 开始 延迟----${Thread.currentThread().name}")//子线程
-					//delay(2000L)  // ……我们延迟 2 秒来保证 JVM 的存活 主线程
-					Log.e(Tag, "主线程 结束 延迟----${Thread.currentThread().name}")//子线程
-				}
+				progressDialog.dismiss()
+			}
+
+
 		}
 
 
 		btn_3.setOnClickListener {
+			/**
+			 *  先执行 Hello
+			 *  然后 job.join()执行 等待3秒 执行 World!
+			 *  再然后执行 join 结束
+			 *
+			 *
+			 */
+			//todo: runBlocking 内部的 delay 方法是阻塞主线程的
 			runBlocking {
-				val job = GlobalScope.launch {
-					// 启动一个新协程并保持对这个作业的引用
+				val job = GlobalScope.launch {// 启动一个新协程并保持对这个作业的引用
+					//主线程阻塞 3秒
 					delay(3000L)
 					Log.e(Tag,"World!----${Thread.currentThread().name}") //子线程 DefaultDispatcher-worker-2
 				}
@@ -131,12 +151,34 @@ class MainActivity : AppCompatActivity() {
 
 
 		btn_4.setOnClickListener {
+			/**
+			 *  先执行 Hello1，Hello2，Hello3，Hello4
+			 *  然后等待3秒 执行 World!  （塞主线程）
+			 *  再然后执行 Hello44444
+			 */
 
-
-
-			runBlocking {
+			/*runBlocking {
 				launch {
-					delay(1000L)
+					delay(3000L)
+					Log.e(Tag, "World!----${Thread.currentThread().name}")
+				}
+				Log.e(Tag, "Hello1,----${Thread.currentThread().name}")
+				Log.e(Tag, "Hello2,----${Thread.currentThread().name}")
+				Log.e(Tag, "Hello3,----${Thread.currentThread().name}")
+				Log.e(Tag, "Hello4,----${Thread.currentThread().name}")
+			}
+
+			Log.e(Tag, "Hello44444,----${Thread.currentThread().name}")*/
+
+			/**
+			 * 先执行 Hello44444
+			 * 然后 Hello1，Hello2，Hello3，Hello4
+			 * 然后等 3秒  （不阻塞主线程）
+			 * 然后执行 World!
+			 */
+			GlobalScope.launch(Dispatchers.Main) {
+				launch(){
+					delay(3000L)
 					Log.e(Tag, "World!----${Thread.currentThread().name}")
 				}
 				Log.e(Tag, "Hello1,----${Thread.currentThread().name}")
@@ -149,30 +191,81 @@ class MainActivity : AppCompatActivity() {
 
 		}
 
-
+		//todo：作用域构建器
 		btn_5.setOnClickListener {
-			runBlocking {
-				launch {
-					//delay(200)
+
+			/**
+			 * runBlocking 是阻塞式，卡主了UI
+			 * 1，launch 启动，嵌套的launch 启动，开始时间；三者同时执行
+			 * 2，过3秒 执行 “结束时间”，“scope0，scope1，scope2，scope3”
+			 * 3，在过1秒之后，执行 “Task from runBlocking”
+			 * 4，再过4秒后：也就是时间到了8秒，执行“Task from 嵌套 launch”
+			 * 5，最后执行 “Coroutine scope is 结束”
+			 *
+			 */
+			runBlocking(Dispatchers.IO) {
+				launch(Dispatchers.IO) {
+					Log.e(Tag, "launch 启动---${System.currentTimeMillis()}--${Thread.currentThread().name}")
+					delay(4000)
 					Log.e(Tag, "Task from runBlocking----${Thread.currentThread().name}")
 				}
-				// 创建一个协程作用域
+				// 挂起函数。
 				coroutineScope {
 					launch {
-						//delay(555)
-						Log.e(Tag, "Task from nested launch----${Thread.currentThread().name}")
+						Log.e(Tag, "嵌套的launch 启动---${System.currentTimeMillis()}--${Thread.currentThread().name}")
+
+						delay(8000)
+						Log.e(Tag, "Task from 嵌套 launch----${Thread.currentThread().name}")
 					}
-					//delay(100L)
+					Log.e(Tag, "开始时间----${System.currentTimeMillis()}----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
+					delay(3000L)
+					Log.e(Tag, "结束时间----${System.currentTimeMillis()}----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
 					Log.e(Tag, "Task from coroutine scope0----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
 					Log.e(Tag, "Task from coroutine scope1----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
 					Log.e(Tag, "Task from coroutine scope2----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
 					Log.e(Tag, "Task from coroutine scope3----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
 				}
-				Log.e(Tag, "Coroutine scope is over----${Thread.currentThread().name}") // 这一行在内嵌 launch 执行完毕后才输出
+				Log.e(Tag, "Coroutine scope is 结束----${Thread.currentThread().name}") // 这一行在内嵌 launch 执行完毕后才输出
+			}
+
+			/**
+			 * GlobalScope.launch(Dispatchers.Main) 是 非 阻塞式，不卡UI
+			 *
+			 * 1，launch 启动，嵌套的launch 启动，开始时间；三者同时执行
+			 * 2，过3秒 执行 “结束时间”，“scope0，scope1，scope2，scope3”
+			 * 3，在过1秒之后，执行 “Task from runBlocking”
+			 * 4，再过4秒后：也就是时间到了8秒，执行“Task from 嵌套 launch”
+			 * 5，最后执行 “Coroutine scope is 结束”
+			 *
+			 */
+			GlobalScope.launch(Dispatchers.Main) {
+				launch(Dispatchers.IO) {
+					Log.e(Tag, "launch 启动---${System.currentTimeMillis()}--${Thread.currentThread().name}")
+
+					delay(4000)
+					Log.e(Tag, "Task from runBlocking----${Thread.currentThread().name}")
+				}
+				// 创建一个协程作用域
+				coroutineScope {
+					launch {
+						Log.e(Tag, "嵌套的launch 启动---${System.currentTimeMillis()}--${Thread.currentThread().name}")
+
+						delay(8000)
+						Log.e(Tag, "Task from 嵌套 launch----${Thread.currentThread().name}")
+					}
+					Log.e(Tag, "开始时间----${System.currentTimeMillis()}----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
+					delay(3000L)
+					Log.e(Tag, "结束时间----${System.currentTimeMillis()}----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
+					Log.e(Tag, "Task from coroutine scope0----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
+					Log.e(Tag, "Task from coroutine scope1----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
+					Log.e(Tag, "Task from coroutine scope2----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
+					Log.e(Tag, "Task from coroutine scope3----${Thread.currentThread().name}") // 这一行会在内嵌 launch 之前输出
+				}
+				Log.e(Tag, "Coroutine scope is 结束----${Thread.currentThread().name}") // 这一行在内嵌 launch 执行完毕后才输出
 			}
 		}
 
-
+		//todo 提取函数重构
 		btn_6.setOnClickListener {
 			suspend fun doWorld() {
 				delay(1000)
@@ -186,25 +279,68 @@ class MainActivity : AppCompatActivity() {
 				Log.e(Tag, "Hello,----${Thread.currentThread().name}")
 			}
 		}
-
+		//todo 协程很轻量
 		btn_7.setOnClickListener {
+			/**
+			 * runBlocking 是阻塞 主线程的，运行时会被 delay卡住 主线程
+			 * 注意：运行的时候，两个 launch{...} 同时启动，同时执行100个，不会占用太大内存，假如换成 线程的话，一口气100*2条线程，内存暴涨
+			 *
+			 *
+			 */
 			runBlocking {
+				repeat(10000) {
+					launch {
+						delay(1000)
+						Log.e(Tag, "$it---${System.currentTimeMillis()}---${Thread.currentThread().name}")
+					}
+
+					launch {
+						delay(1000)
+						Log.e(Tag, "$it---${System.currentTimeMillis()}---${Thread.currentThread().name}")
+					}
+
+				}
+			}
+			/**
+			 * 尝试使用线程来实现。对比 协程方法
+			 * 注意：这里看似是启动 十万个线程 不会卡主线程，但是实际情况确实，一直卡在创建线程的过程中，也就是卡住了主线程，可能会导致 ANR
+			 * 并且通过 Profiler 内存分析，可以看见，一直在 GC 内存回收，说明消耗大量内存，可有可能会导致 OOM
+			 *
+			 *
+			 *
+			 */
+
+			repeat(100000) {
+				thread {
+					Log.e(Tag, "$it---${System.currentTimeMillis()}---${Thread.currentThread().name}")
+				}
+
+			}
+			/**
+			 * GlobalScope.launch(Dispatchers.Main) 非阻塞线程，运行时不会被 delay 阻塞
+			 *
+			 *
+			 */
+			GlobalScope.launch(Dispatchers.Main) {
 				repeat(100) {
 					launch {
 						delay(1000)
-						Log.e(Tag, "$it----${Thread.currentThread().name}")
+						Log.e(Tag, "$it---${System.currentTimeMillis()}---${Thread.currentThread().name}")
 					}
 				}
 			}
+
+
 		}
 
 
 
 
+		//todo 全局协程像守护线程
 		btn_8.setOnClickListener {
 			runBlocking {
 				GlobalScope.launch {
-					repeat(10) {
+					repeat(100) {
 						Log.e(Tag, "I'm sleeping $it ...----${Thread.currentThread().name} ")
 						delay(500L)
 					}
@@ -214,8 +350,16 @@ class MainActivity : AppCompatActivity() {
 				Log.e(Tag, "World!----${Thread.currentThread().name}")
 			}
 		}
-		//=== 取消协程的执行
+
+
+
+
+
+		//todo 取消协程的执行
 		btn_9.setOnClickListener {
+			/**
+			 *  这里还是 阻塞主线程的 按钮点击后，会卡住1.3秒
+			 */
 			runBlocking {
 				var job = launch {
 					repeat(1000) {
@@ -225,22 +369,23 @@ class MainActivity : AppCompatActivity() {
 				}
 
 
-
+				Log.e(Tag, "main: 开始延迟----${Thread.currentThread().name}!")
 				delay(1300L) // 延迟一段时间
 				Log.e(Tag, "main: I'm tired of waiting----${Thread.currentThread().name}!")
 				job.cancel() // 取消该作业
 				job.join() // 等待作业执行结束
 				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
 			}
+
 		}
-		//=== 取消是协作的
+		//todo 取消是协作的
 		btn_10.setOnClickListener {
 			runBlocking {
 				val startTime = System.currentTimeMillis()
 				val job = launch(Dispatchers.Default) {
 					var nextPrintTime = startTime
 					var i = 0
-					while (i < 5) { // 一个执行计算的循环，只是为了占用 CPU
+					while (i < 10) { // 一个执行计算的循环，只是为了占用 CPU
 						// 每秒打印消息两次
 						if (System.currentTimeMillis() >= nextPrintTime) {
 							Log.e(Tag, "job: I'm sleeping ${i++} ...----${Thread.currentThread().name}")//子线程
@@ -250,39 +395,48 @@ class MainActivity : AppCompatActivity() {
 				}
 
 
-
-
-
-
-
 				delay(1300L) // 等待一段时间
 				Log.e(Tag, "main: I'm tired of waiting!----${Thread.currentThread().name}")
 				job.cancelAndJoin() // 取消一个作业并且等待它结束  《如果协程正在执行计算任务，并且没有检查取消的话，那么它是不能被取消的》
+
 				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
 			}
 		}
-		//=== 使计算代码可取消 isActive 是一个可以被使用在 CoroutineScope 中的扩展属性。
+
+
+
+
+
+
+		//todo 使计算代码可取消 isActive 是一个可以被使用在 CoroutineScope 中的扩展属性。
 		btn_11.setOnClickListener {
+			/**
+			 * job.cancelAndJoin() 方法执行后，isActive 就会返回 false，不活跃状态
+			 */
 			runBlocking {
 				val startTime = System.currentTimeMillis()
 				val job = launch(Dispatchers.Default) {
 					var nextPrintTime = startTime
 					var i = 0
+					Log.e(Tag, "isActive!----${isActive} ")
 					while (isActive) { // 可以被取消的计算循环 当1300L时间过了，isActive就返回false
 						// 每秒打印消息两次
 						if (System.currentTimeMillis() >= nextPrintTime) {
 							Log.e(Tag, "job: I'm sleeping ${i++} ...----${Thread.currentThread().name} ") // DefaultDispatcher-worker-1
 							nextPrintTime += 500L
+							Log.e(Tag, "isActive!内----${isActive} ")
 						}
+
+
 					}
 				}
-				delay(1300L) // 等待一段时间
+				delay(1800L) // 等待一段时间
 				Log.e(Tag, "main: I'm tired of waiting!----${Thread.currentThread().name} ")
 				job.cancelAndJoin() // 取消该作业并等待它结束
 				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
 			}
 		}
-		//=== 在 finally 中释放资源
+		//todo 在 finally 中释放资源
 		btn_12.setOnClickListener {
 			runBlocking {
 				val job = launch {
@@ -302,6 +456,11 @@ class MainActivity : AppCompatActivity() {
 				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name} ")
 			}
 		}
+
+
+
+
+
 		//=== 运行不能取消的代码块
 		btn_13.setOnClickListener {
 			runBlocking {

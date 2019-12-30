@@ -32,6 +32,14 @@ class SecondActivity : AppCompatActivity(), CoroutineScope by CoroutineScope(Dis
 					}
 				}
 			}*/
+
+
+
+			launch {
+
+
+
+			}
 			Log.e(Tag, "干活4----${Thread.currentThread().name}")// --
 			GlobalScope.launch(Dispatchers.Main) {
 				var progressDialog = ProgressDialog(this@SecondActivity)
