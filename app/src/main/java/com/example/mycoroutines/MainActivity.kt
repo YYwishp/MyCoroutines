@@ -38,8 +38,15 @@ class MainActivity : AppCompatActivity() {
 				delay(5000L) // 非阻塞的等待 5 秒钟（默认时间单位是毫秒）
 
 				btn_first.text = "5秒后"
+	            Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出    子线程4
+				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出    子线程
 
-				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出 子线程
+				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出    子线程1
+				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出    子线程2
+				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出    子线程3
+
+
+
 			}
 			Log.e(Tag, "Hello,----${Thread.currentThread().name}") // 协程已在等待时主线程还在继续 主线程*/
 
