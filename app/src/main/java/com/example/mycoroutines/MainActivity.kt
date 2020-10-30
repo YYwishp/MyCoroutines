@@ -44,6 +44,9 @@ class MainActivity : AppCompatActivity() {
 				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出    子线程1
 				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出    子线程2
 				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出    子线程3
+				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出    子线程5-dev1
+				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出    子线程6-dev1
+				Log.e(Tag, "World! ----${Thread.currentThread().name}") // 在延迟后打印输出    子线程7-dev1
 
 
 
