@@ -132,6 +132,12 @@ class MainActivity : AppCompatActivity() {
 			}
 
 
+
+
+
+
+
+
 		}
 
 
@@ -186,7 +192,7 @@ class MainActivity : AppCompatActivity() {
 			 * 然后等 3秒  （不阻塞主线程）
 			 * 然后执行 World!
 			 */
-			GlobalScope.launch(Dispatchers.Main) {
+			/*GlobalScope.launch(Dispatchers.Main) {
 				launch(){
 					delay(3000L)
 					Log.e(Tag, "World!----${Thread.currentThread().name}")
@@ -197,7 +203,85 @@ class MainActivity : AppCompatActivity() {
 				Log.e(Tag, "Hello4,----${Thread.currentThread().name}")
 			}
 
-			Log.e(Tag, "Hello44444,----${Thread.currentThread().name}")
+			Log.e(Tag, "Hello44444,----${Thread.currentThread().name}")*/
+			/**
+			 * 4者并发执行
+			 */
+			/*GlobalScope.launch(Dispatchers.Main){
+				launch(){
+					delay(3000L)
+					Log.e(Tag, "111111----${Thread.currentThread().name}")
+				}
+
+				launch(){
+					delay(1000L)
+					Log.e(Tag, "222222----${Thread.currentThread().name}")
+				}
+
+				launch(){
+					delay(500L)
+					Log.e(Tag, "333333----${Thread.currentThread().name}")
+				}
+
+				Log.e(Tag, "44444,----${Thread.currentThread().name}")
+
+			}*/
+			/**
+			 * withContext 是 顺序执行的，并且执行完了才能执行下面代码
+			 *
+			 * 3个launch 方法，在withContext 执行结束后，并发执行，
+			 *
+			 * 下面一个withContext 在第一个 withContext执行结束后，与3个launch一起并发执行
+			 *
+			 */
+			var progressDialog = ProgressDialog(this@MainActivity)
+			progressDialog.show()
+
+			GlobalScope.launch(Dispatchers.Main){
+				withContext(Dispatchers.IO){
+					Log.e(Tag, "withContext start----${Thread.currentThread().name}  ${System.currentTimeMillis()}")
+					delay(5000L)
+					Log.e(Tag, "withContext 11111----${Thread.currentThread().name}  ${System.currentTimeMillis()}")
+				}
+
+
+				launch(Dispatchers.IO){
+					delay(8000L)
+					Log.e(Tag, "111111----${Thread.currentThread().name}   ${System.currentTimeMillis()}")
+				}
+
+				launch(){
+					delay(1000L)
+					Log.e(Tag, "222222----${Thread.currentThread().name}   ${System.currentTimeMillis()}")
+				}
+
+				launch(){
+					delay(500L)
+					Log.e(Tag, "333333----${Thread.currentThread().name}   ${System.currentTimeMillis()}")
+				}
+
+
+				withContext(Dispatchers.IO){
+					delay(8000L)
+					Log.e(Tag, "withContext 44444----${Thread.currentThread().name}  ${System.currentTimeMillis()}")
+				}
+
+				Log.e(Tag, "44444,----${Thread.currentThread().name}   ${System.currentTimeMillis()}")
+
+
+				progressDialog.dismiss()
+
+			}
+
+
+
+
+
+
+
+
+
+
 
 		}
 
