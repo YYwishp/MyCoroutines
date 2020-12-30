@@ -238,33 +238,33 @@ class MainActivity : AppCompatActivity() {
 			progressDialog.show()
 
 			GlobalScope.launch(Dispatchers.Main){
-				withContext(Dispatchers.IO){
-					Log.e(Tag, "withContext start----${Thread.currentThread().name}  ${System.currentTimeMillis()}")
-					delay(5000L)
-					Log.e(Tag, "withContext 11111----${Thread.currentThread().name}  ${System.currentTimeMillis()}")
-				}
+				//withContext(Dispatchers.IO){
+				//	Log.e(Tag, "withContext start----${Thread.currentThread().name}  ${System.currentTimeMillis()}")
+				//	delay(5000L)
+				//	Log.e(Tag, "withContext 11111----${Thread.currentThread().name}  ${System.currentTimeMillis()}")
+				//}
 
 
-				launch(Dispatchers.IO){
+				launch(Dispatchers.Main){
 					delay(8000L)
 					Log.e(Tag, "111111----${Thread.currentThread().name}   ${System.currentTimeMillis()}")
 				}
 
-				launch(){
+				launch(Dispatchers.Main){
 					delay(1000L)
 					Log.e(Tag, "222222----${Thread.currentThread().name}   ${System.currentTimeMillis()}")
 				}
 
-				launch(){
+				launch(Dispatchers.Main){
 					delay(500L)
 					Log.e(Tag, "333333----${Thread.currentThread().name}   ${System.currentTimeMillis()}")
 				}
 
 
-				withContext(Dispatchers.IO){
-					delay(8000L)
-					Log.e(Tag, "withContext 44444----${Thread.currentThread().name}  ${System.currentTimeMillis()}")
-				}
+				//withContext(Dispatchers.IO){
+				//	delay(8000L)
+				//	Log.e(Tag, "withContext 44444----${Thread.currentThread().name}  ${System.currentTimeMillis()}")
+				//}
 
 				Log.e(Tag, "44444,----${Thread.currentThread().name}   ${System.currentTimeMillis()}")
 
@@ -381,20 +381,20 @@ class MainActivity : AppCompatActivity() {
 			 *
 			 *
 			 */
-			runBlocking {
-				repeat(10000) {
-					launch {
-						delay(1000)
-						Log.e(Tag, "$it---${System.currentTimeMillis()}---${Thread.currentThread().name}")
-					}
-
-					launch {
-						delay(1000)
-						Log.e(Tag, "$it---${System.currentTimeMillis()}---${Thread.currentThread().name}")
-					}
-
-				}
-			}
+			//runBlocking {
+			//	repeat(10000) {
+			//		launch {
+			//			delay(100)
+			//			Log.e(Tag, "$it---${System.currentTimeMillis()}---${Thread.currentThread().name}")
+			//		}
+			//
+			//		launch {
+			//			delay(100)
+			//			Log.e(Tag, "$it---${System.currentTimeMillis()}---${Thread.currentThread().name}")
+			//		}
+			//
+			//	}
+			//}
 			/**
 			 * 尝试使用线程来实现。对比 协程方法
 			 * 注意：这里看似是启动 十万个线程 不会卡主线程，但是实际情况确实，一直卡在创建线程的过程中，也就是卡住了主线程，可能会导致 ANR
@@ -404,21 +404,21 @@ class MainActivity : AppCompatActivity() {
 			 *
 			 */
 
-			repeat(100000) {
-				thread {
-					Log.e(Tag, "$it---${System.currentTimeMillis()}---${Thread.currentThread().name}")
-				}
-
-			}
+			//repeat(1000) {
+			//	thread {
+			//		Log.e(Tag, "$it---${System.currentTimeMillis()}---${Thread.currentThread().name}")
+			//	}
+			//
+			//}
 			/**
 			 * GlobalScope.launch(Dispatchers.Main) 非阻塞线程，运行时不会被 delay 阻塞
 			 *
 			 *
 			 */
 			GlobalScope.launch(Dispatchers.Main) {
-				repeat(100) {
-					launch {
-						delay(1000)
+				repeat(1000) {
+					launch(Dispatchers.Unconfined) {
+						delay(10)
 						Log.e(Tag, "$it---${System.currentTimeMillis()}---${Thread.currentThread().name}")
 					}
 				}
@@ -454,12 +454,61 @@ class MainActivity : AppCompatActivity() {
 			/**
 			 *  这里还是 阻塞主线程的 按钮点击后，会卡住1.3秒
 			 */
-			runBlocking {
-				var job = launch {
-					repeat(1000) {
-						Log.e(Tag, "job: I'm sleeping $it ...----${Thread.currentThread().name} ")  //主线程
-						delay(500L)
+			//runBlocking {
+			//	var job = launch {
+			//		repeat(1000) {
+			//			Log.e(Tag, "job: I'm sleeping $it ...----${Thread.currentThread().name} ")  //主线程
+			//			//delay(500L)
+			//
+			//			Thread.sleep(500)
+			//
+			//		}
+			//	}
+			//
+			//
+			//	Log.e(Tag, "main: 开始延迟----${Thread.currentThread().name}!")
+			//	delay(1300L) // 延迟一段时间
+			//	Log.e(Tag, "main: I'm tired of waiting----${Thread.currentThread().name}!")
+			//	job.cancel() // 取消该作业
+			//	job.join() // 等待作业执行结束
+			//	Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
+			//}
+
+
+			//GlobalScope.launch(Dispatchers.Main) {
+			//	var job = launch(Dispatchers.IO) {
+			//		repeat(100) {
+			//			Log.e(Tag, "job: I'm sleeping $it ...----${Thread.currentThread().name} ")  //主线程
+			//			//delay(500L)/
+			//			Thread.sleep(500)
+			//		}
+			//	}
+			//
+			//
+			//	Log.e(Tag, "main: 开始延迟----${Thread.currentThread().name}!")
+			//	delay(1300L) // 延迟一段时间
+			//	Log.e(Tag, "main: I'm tired of waiting----${Thread.currentThread().name}!")
+			//	job.cancel() // 取消该作业
+			//	//job.join() // 等待作业执行结束
+			//	Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
+			//}
+
+
+			GlobalScope.launch(Dispatchers.Main) {
+				var job = launch(Dispatchers.Main) {
+					try {
+						repeat(100) {
+							Log.e(Tag, "job: I'm sleeping $it ...----${Thread.currentThread().name} ")  //主线程
+							delay(500L)
+							//Thread.sleep(500)
+						}
+					} finally {
+						println("job: I'm running finally")
 					}
+					//var i = 0
+					//while (true) {
+					//	Log.e(Tag, "job: I'm sleeping ${i++} ...----${Thread.currentThread().name} ")  //主线程
+					//}
 				}
 
 
@@ -467,24 +516,31 @@ class MainActivity : AppCompatActivity() {
 				delay(1300L) // 延迟一段时间
 				Log.e(Tag, "main: I'm tired of waiting----${Thread.currentThread().name}!")
 				job.cancel() // 取消该作业
-				job.join() // 等待作业执行结束
+				//job.join() // 等待作业执行结束
 				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
 			}
+
+
+
 
 		}
 		//todo 取消是协作的
 		btn_10.setOnClickListener {
-			runBlocking {
+			/*runBlocking {
 				val startTime = System.currentTimeMillis()
 				val job = launch(Dispatchers.Default) {
-					var nextPrintTime = startTime
-					var i = 0
-					while (i < 10) { // 一个执行计算的循环，只是为了占用 CPU
-						// 每秒打印消息两次
-						if (System.currentTimeMillis() >= nextPrintTime) {
-							Log.e(Tag, "job: I'm sleeping ${i++} ...----${Thread.currentThread().name}")//子线程
-							nextPrintTime += 500L
+					try {
+						var nextPrintTime = startTime
+						var i = 0
+						while (i < 10) { // 一个执行计算的循环，只是为了占用 CPU
+							// 每秒打印消息两次
+							if (System.currentTimeMillis() >= nextPrintTime) {
+								Log.e(Tag, "job: I'm sleeping ${i++} ...----${Thread.currentThread().name}")//子线程
+								nextPrintTime += 500L
+							}
 						}
+					} finally {
+						Log.e(Tag, "job: I'm running finally ----${Thread.currentThread().name} ")
 					}
 				}
 
@@ -494,7 +550,45 @@ class MainActivity : AppCompatActivity() {
 				job.cancelAndJoin() // 取消一个作业并且等待它结束  《如果协程正在执行计算任务，并且没有检查取消的话，那么它是不能被取消的》
 
 				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
+			}*/
+
+			GlobalScope.launch(Dispatchers.Main) {
+				val startTime = System.currentTimeMillis()
+				val job = launch(Dispatchers.Main) {
+					try {
+						var nextPrintTime = startTime
+						var i = 0
+						while (i < 10) { // 一个执行计算的循环，只是为了占用 CPU
+							// 每秒打印消息两次
+							if (System.currentTimeMillis() >= nextPrintTime) {
+								Log.e(Tag, "job: I'm sleeping ${i++} ...----${Thread.currentThread().name}")//子线程
+								nextPrintTime += 500L
+							}
+						}
+					} finally {
+						Log.e(Tag, "job: I'm running finally ----${Thread.currentThread().name} ")
+					}
+				}
+
+				launch(Dispatchers.Main){
+					//delay(500L)
+					Log.e(Tag, "333333----${Thread.currentThread().name}   ${System.currentTimeMillis()}")
+				}
+
+				delay(1300L) // 等待一段时间
+				Log.e(Tag, "main: I'm tired of waiting!----${Thread.currentThread().name}")
+				job.cancelAndJoin() // 取消一个作业并且等待它结束  《如果协程正在执行计算任务，并且没有检查取消的话，那么它是不能被取消的》
+
+				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name}")
 			}
+
+
+
+
+
+
+
+
 		}
 
 
@@ -534,21 +628,73 @@ class MainActivity : AppCompatActivity() {
 		btn_12.setOnClickListener {
 			runBlocking {
 				val job = launch {
+					/*try {
+						repeat(1000) { i ->
+							Log.e(Tag, "job: I'm sleeping $i ...----${Thread.currentThread().name} ") //主线程
+							//delay(500L)
+						}
+					} finally {
+						//delay(500L)
+						Log.e(Tag, "job: I'm running finally ----${Thread.currentThread().name} ")
+					}*/
+
+
 					try {
 						repeat(1000) { i ->
 							Log.e(Tag, "job: I'm sleeping $i ...----${Thread.currentThread().name} ") //主线程
 							delay(500L)
 						}
+					} catch (e: Exception) {
+						Log.e(Tag, "异常 ${e.message} ")
 					} finally {
-						//delay(500L)
 						Log.e(Tag, "job: I'm running finally ----${Thread.currentThread().name} ")
 					}
 				}
 				delay(1300L) // 延迟一段时间
 				Log.e(Tag, "main: I'm tired of waiting!----${Thread.currentThread().name} ")
-				job.cancelAndJoin() // 取消该作业并且等待它结束
+				//job.cancelAndJoin() // 取消该作业并且等待它结束
+				job.cancel()
+
 				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name} ")
 			}
+
+
+			/*runBlocking {
+				val startTime = System.currentTimeMillis()
+
+				val job = launch {
+					try {
+						var nextPrintTime = startTime
+						var i = 0
+						while (i < 10) { // 一个执行计算的循环，只是为了占用 CPU
+							// 每秒打印消息两次
+							if (System.currentTimeMillis() >= nextPrintTime) {
+								Log.e(Tag, "job: I'm sleeping ${i++} ...----${Thread.currentThread().name}")//子线程
+								nextPrintTime += 500L
+							}
+						}
+					}
+
+
+					finally {
+						//delay(500L)
+						Log.e(Tag, "job: I'm running finally ----${Thread.currentThread().name} ")
+					}
+				}
+
+
+				delay(100L) // 延迟一段时间
+				Log.e(Tag, "main: I'm tired of waiting!----${Thread.currentThread().name} ")
+				job.cancelAndJoin() // 取消该作业并且等待它结束
+				Log.e(Tag, "main: Now I can quit.----${Thread.currentThread().name} ")
+			}*/
+
+
+
+
+
+
+
 		}
 
 
@@ -623,7 +769,7 @@ class MainActivity : AppCompatActivity() {
 				val time = measureTimeMillis {
 
 					log("111111111")
-					val one = async(Dispatchers.Main){
+					val one = async(){
 						Log.e(Tag, "one 该线程：----${Thread.currentThread().name}")
 						doSomethingUsefulOne()
 					}
@@ -891,7 +1037,7 @@ class MainActivity : AppCompatActivity() {
 		///////////////////////////////////////////////////////////////////////////
 		//todo:调度器与线程
 		btn_22.setOnClickListener {
-			runBlocking {
+			/*runBlocking {
 				//todo:运行在父协程的上下文中，即 runBlocking 主协程 === main
 				launch {
 					Log.e(Tag, "main runBlocking      : I'm working in thread ${Thread.currentThread().name}")//=== main
@@ -910,26 +1056,114 @@ class MainActivity : AppCompatActivity() {
 				launch(context = newSingleThreadContext("MyOwnThread")){
 					Log.e(Tag, "newSingleThreadContext: I'm working in thread ${Thread.currentThread().name}")//=== MyOwnThread
 				}
+			}*/
+
+
+			/*GlobalScope.launch(Dispatchers.Main) {
+
+				//todo:运行在父协程的上下文中，即 runBlocking 主协程 === main
+				launch {
+					Log.e(Tag, "main runBlocking      : I'm working in thread ${Thread.currentThread().name}")//=== main
+				}
+				//todo: 不受限的——将工作在主线程中 === main
+				launch(context = Dispatchers.Unconfined) {
+					Log.e(Tag, "Unconfined            : I'm working in thread ${Thread.currentThread().name}")//=== main
+				}
+				//todo:将会获取默认调度器 === DefaultDispatcher-worker-2
+				launch(context = Dispatchers.Default){
+					Log.e(Tag, "Default               : I'm working in thread ${Thread.currentThread().name}")//=== DefaultDispatcher-worker-2
+
+				}
+
+				//todo:将使它获得一个新的线程 === MyOwnThread
+				launch(context = newSingleThreadContext("MyOwnThread")){
+					Log.e(Tag, "newSingleThreadContext: I'm working in thread ${Thread.currentThread().name}")//=== MyOwnThread
+				}
+
+			}*/
+
+
+
+
+			GlobalScope.launch(Dispatchers.IO) {
+
+				//todo:运行在父协程的上下文中，即 runBlocking 主协程 === main
+				launch {
+					Log.e(Tag, "main runBlocking      : I'm working in thread ${Thread.currentThread().name}")//=== DefaultDispatcher-worker-3
+				}
+				//todo: 不受限的——将工作在主线程中 === main
+				launch(context = Dispatchers.Unconfined) {
+					Log.e(Tag, "Unconfined            : I'm working in thread ${Thread.currentThread().name}")//=== DefaultDispatcher-worker-1
+				}
+				//todo:将会获取默认调度器 === DefaultDispatcher-worker-2
+				launch(context = Dispatchers.Default){
+					Log.e(Tag, "Default               : I'm working in thread ${Thread.currentThread().name}")//=== DefaultDispatcher-worker-2
+
+				}
+
+				//todo:将使它获得一个新的线程 === MyOwnThread
+				launch(context = newSingleThreadContext("MyOwnThread")){
+					Log.e(Tag, "newSingleThreadContext: I'm working in thread ${Thread.currentThread().name}")//=== MyOwnThread
+				}
+
 			}
+
+
+
+
+
+
+
+
+
+
+
 		}
 		//todo: Unconfined 非受限调度器 vs 受限调度器
 		btn_23.setOnClickListener {
 
-			runBlocking {
+			/*runBlocking {
 				//todo: 非受限的 ——将和主线程一起工作
 				launch(Dispatchers.Unconfined){
-					Log.e(Tag, "Unconfined 非受限的    : I'm working in thread ${Thread.currentThread().name}")
+					Log.e(Tag, "Unconfined 非受限的    : I'm working in thread ${Thread.currentThread().name}")  //main
 					delay(500)
-					Log.e(Tag, "Unconfined 非受限的    : After delay in thread ${Thread.currentThread().name}")
+					Log.e(Tag, "Unconfined 非受限的    : After delay in thread ${Thread.currentThread().name}")  //kotlinx.coroutines.DefaultExecutor
 				}
 
 				//todo:  父协程的上下文，主 runBlocking 协程
 				launch {
-					Log.e(Tag, "main runBlocking 受限的 : I'm working in thread ${Thread.currentThread().name}")
+					Log.e(Tag, "main runBlocking 受限的 : I'm working in thread ${Thread.currentThread().name}") //main
 					delay(1000)
-					Log.e(Tag, "main runBlocking 受限的 : After delay in thread ${Thread.currentThread().name}")
+					Log.e(Tag, "main runBlocking 受限的 : After delay in thread ${Thread.currentThread().name}") //main
 				}
+			}*/
+
+			GlobalScope.launch(Dispatchers.IO) {
+
+				launch(Dispatchers.Unconfined){
+					Log.e(Tag, "Unconfined 非受限的    : I'm working in thread ${Thread.currentThread().name}") //DefaultDispatcher-worker-1
+					delay(500)
+					Log.e(Tag, "Unconfined 非受限的    : After delay in thread ${Thread.currentThread().name}") //kotlinx.coroutines.DefaultExecutor
+				}
+
+				//todo:  父协程的上下文，主 runBlocking 协程
+				launch {
+					Log.e(Tag, "main runBlocking 受限的 : I'm working in thread ${Thread.currentThread().name}") //DefaultDispatcher-worker-1
+					delay(1000)
+					Log.e(Tag, "main runBlocking 受限的 : After delay in thread ${Thread.currentThread().name}") //DefaultDispatcher-worker-3
+				}
+
+
+
+
+
 			}
+
+
+
+
+
+
 
 
 		}
@@ -1214,7 +1448,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-			/*GlobalScope.launch(Dispatchers.Main+CoroutineName("Hello")) {
+			GlobalScope.launch(Dispatchers.Main+CoroutineName("Hello")) {
 				log("协程开始0")
 				log("协程开始1")
 				log("协程开始2")
@@ -1238,7 +1472,7 @@ class MainActivity : AppCompatActivity() {
 				log("-----------------------------")
 
 				coroutineJob()
-			}*/
+			}
 
 
 
@@ -1290,7 +1524,8 @@ class MainActivity : AppCompatActivity() {
 
 	suspend fun doSomethingUsefulOne(): Int {
 		//Log.e(Tag, "doSomethingUseful One 该线程：----${Thread.currentThread().name}")
-		delay(4000L) // 假设我们在这里做了些有用的事
+		//delay(4000L) // 假设我们在这里做了些有用的事
+		Thread.sleep(4000)
 		Log.e(Tag, "doSomethingUseful One 该线程：----${Thread.currentThread().name}")
 		return 13
 		//return 3/0
@@ -1299,7 +1534,8 @@ class MainActivity : AppCompatActivity() {
 	suspend fun doSomethingUsefulTwo(): Int {
 		//Log.e(Tag, "doSomethingUseful Two 该线程：----${Thread.currentThread().name}")
 
-		delay(2000L) // 假设我们在这里也做了一些有用的事
+		//delay(2000L) // 假设我们在这里也做了一些有用的事
+		Thread.sleep(4000)
 		Log.e(Tag, "doSomethingUseful Two 该线程：----${Thread.currentThread().name}")
 		return 29
 		//return 3 / 0
